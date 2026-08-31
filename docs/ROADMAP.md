@@ -1,7 +1,8 @@
 # Roadmap
 
 > Voir [research/SYNTHESE.md](research/SYNTHESE.md) pour les décisions d'architecture
-> issues de la recherche (art antérieur, API du jeu confirmée, contraintes réseau).
+> et [research/production/SYNTHESE-PRODUCTION.md](research/production/SYNTHESE-PRODUCTION.md)
+> pour l'outillage, Harmony, la CI/CD et la qualité (avec file d'attente priorisée).
 
 ## Phase 0 — Fondations ✅ (ce dépôt)
 - [x] Structure de mod conforme au SDK officiel (asmdef, locales, point d'entrée `IModBigAmbitions`)
@@ -9,10 +10,13 @@
 - [x] Protocole binaire versionné (Hello/Welcome/PlayerState/PlayerLeft)
 - [x] Avatar distant avec interpolation
 - [x] `LocalPlayerLocator` branché sur `GameManager.Instance.playerController` (accès attesté)
-- [x] Dossier de recherche complet (`docs/research/`)
+- [x] Dossier de recherche complet (`docs/research/` + `docs/research/production/`)
+- [x] `ICoopTransport` + `LoopbackTransport` (dev/test du protocole sans Steam) + `CoopLog`
+- [ ] Outillage : `tools/link-mod.ps1`, `build.ps1` (adaptation Dudeldups), `run.ps1`, `tail-log.ps1`
 - [ ] Compiler dans Unity avec les DLL du jeu
 - [ ] Créer le `ModManifest.asset` dans l'éditeur Unity
 - [ ] Démarrer le réseau sur `GlobalEvents.RegisterOnGameLoadedCallback` plutôt qu'à l'init
+- [ ] Tests round-trip de `NetMessage` + CI v0 (tests, watcher de buildid Steam)
 
 ## Phase 1 — MVP « se voir » 
 - [ ] Tester à deux (F9 héberger → invitation Steam → connexion)

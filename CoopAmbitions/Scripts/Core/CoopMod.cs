@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using BAModAPI;
 using CoopAmbitions.Core;
+using CoopAmbitions.Debug;
 using UnityEngine;
 
 [assembly: RegisterModClass(typeof(CoopMod))]
@@ -24,6 +25,7 @@ namespace CoopAmbitions.Core
         public Task OnLoadAsync(ModContext context)
         {
             Context = context;
+            CoopLog.Sink = context.Logger.Info;
 
             _runnerObject = new GameObject("CoopAmbitions");
             UnityEngine.Object.DontDestroyOnLoad(_runnerObject);
@@ -42,9 +44,10 @@ namespace CoopAmbitions.Core
             }
 
             Context = null;
+            CoopLog.Sink = null;
             return Task.CompletedTask;
         }
 
-        public static void Log(string message) => Context?.Logger.Info(message);
+        public static void Log(string message) => CoopLog.Info(message);
     }
 }

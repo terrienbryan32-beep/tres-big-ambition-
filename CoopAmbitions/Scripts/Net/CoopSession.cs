@@ -16,7 +16,7 @@ namespace CoopAmbitions.Net
         private const float SendInterval = 0.1f; // 10 Hz
         private const float MinMoveSqr = 0.0001f; // ~1 cm : en dessous, on n'envoie pas
 
-        private readonly SteamTransport _transport;
+        private readonly ICoopTransport _transport;
         private readonly Action<string> _log;
         private readonly Dictionary<ulong, RemotePlayerView> _remotePlayers = new();
         private readonly Dictionary<ulong, string> _playerNames = new();
@@ -28,10 +28,10 @@ namespace CoopAmbitions.Net
         public bool IsHost => _transport.IsHost;
         public int RemotePlayerCount => _remotePlayers.Count;
 
-        public CoopSession(Action<string> log)
+        public CoopSession(ICoopTransport transport, Action<string> log)
         {
             _log = log ?? (_ => { });
-            _transport = new SteamTransport();
+            _transport = transport;
             _transport.StatusChanged += _log;
             _transport.MessageReceived += OnMessage;
             _transport.PeerConnected += OnPeerConnected;
@@ -81,7 +81,7 @@ namespace CoopAmbitions.Net
 
             var state = new PlayerStateData
             {
-                SteamId = _transport.LocalSteamId,
+                SteamId = _transport.LocalId,
                 Position = pos,
                 Yaw = yaw,
                 Speed = float.IsInfinity(speed) ? 0f : speed,
@@ -102,7 +102,7 @@ namespace CoopAmbitions.Net
             {
                 // Client connecté à l'hôte : se présenter.
                 _transport.SendToAll(
-                    NetMessage.BuildHello(_transport.LocalSteamId, _transport.LocalName),
+                    NetMessage.BuildHello(_transport.LocalId, _transport.LocalName),
                     reliable: true);
             }
         }
@@ -172,11 +172,11 @@ namespace CoopAmbitions.Net
 
             // Etat courant de la session pour le nouveau venu (hôte inclus).
             var known = _remotePlayers.Keys.Where(id => id != steamId)
-                .Append(_transport.LocalSteamId)
+                .Append(_transport.LocalId)
                 .Select(id => new PlayerStateData { SteamId = id })
                 .ToArray();
             var names = known.Select(p =>
-                p.SteamId == _transport.LocalSteamId
+                p.SteamId == _transport.LocalId
                     ? _transport.LocalName
                     : _playerNames.GetValueOrDefault(p.SteamId, "?")).ToArray();
             _transport.SendToAll(NetMessage.BuildWelcome(known, names), reliable: true);
@@ -197,7 +197,7 @@ namespace CoopAmbitions.Net
             {
                 var state = PlayerStateData.Read(r);
                 var name = r.ReadString();
-                if (state.SteamId == _transport.LocalSteamId) continue;
+                if (state.SteamId == _transport.LocalId) continue;
                 _playerNames[state.SteamId] = name;
                 EnsureRemotePlayer(state.SteamId, name);
             }
@@ -208,7 +208,7 @@ namespace CoopAmbitions.Net
         private void HandlePlayerState(BinaryReader r, byte[] raw)
         {
             var state = PlayerStateData.Read(r);
-            if (state.SteamId == _transport.LocalSteamId) return;
+            if (state.SteamId == _transport.LocalId) return;
 
             var view = EnsureRemotePlayer(state.SteamId,
                 _playerNames.GetValueOrDefault(state.SteamId, "?"));

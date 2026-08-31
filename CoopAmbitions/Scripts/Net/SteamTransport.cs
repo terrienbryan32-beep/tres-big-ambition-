@@ -11,7 +11,7 @@ namespace CoopAmbitions.Net
     /// en mode relay (pas de ports à ouvrir, NAT traversal géré par Valve).
     /// Le jeu initialise déjà SteamClient — on ne fait que s'en servir.
     /// </summary>
-    public sealed class SteamTransport : IDisposable
+    public sealed class SteamTransport : ICoopTransport
     {
         public const int VirtualPort = 0;
         public const int MaxPlayers = 4;
@@ -19,7 +19,7 @@ namespace CoopAmbitions.Net
 
         public bool IsHost { get; private set; }
         public bool IsRunning { get; private set; }
-        public ulong LocalSteamId => SteamClient.IsValid ? SteamClient.SteamId.Value : 0;
+        public ulong LocalId => SteamClient.IsValid ? SteamClient.SteamId.Value : 0;
         public string LocalName => SteamClient.IsValid ? SteamClient.Name : "local";
 
         /// <summary>(steamIdExpéditeur — 0 si inconnu/hôte, données) reçu du réseau.</summary>

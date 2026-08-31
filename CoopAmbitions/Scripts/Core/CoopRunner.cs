@@ -19,7 +19,7 @@ namespace CoopAmbitions.Core
 
         private void Awake()
         {
-            _session = new CoopSession(CoopMod.Log);
+            _session = new CoopSession(new SteamTransport(), CoopMod.Log);
         }
 
         private void Update()
