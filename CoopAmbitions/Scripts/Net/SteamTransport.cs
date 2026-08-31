@@ -35,6 +35,10 @@ namespace CoopAmbitions.Net
 
         public SteamTransport()
         {
+            // Démarrer l'accès relay tôt : le premier ping/route Valve prend quelques secondes.
+            if (SteamClient.IsValid)
+                SteamNetworkingUtils.InitRelayNetworkAccess();
+
             SteamFriends.OnGameLobbyJoinRequested += OnGameLobbyJoinRequested;
             SteamMatchmaking.OnLobbyEntered += OnLobbyEntered;
             SteamMatchmaking.OnLobbyMemberDisconnected += OnLobbyMemberLeft;
@@ -113,9 +117,21 @@ namespace CoopAmbitions.Net
 
         // -------------------------------------------------------------- commun
 
+        private static bool _pumping;
+
         /// <summary>À appeler chaque frame : pompe les messages entrants.</summary>
         public void Pump()
         {
+            // Les changements d'état de connexion et les événements de lobby passent par le
+            // Dispatch Steam, pas par Receive() : on pompe aussi les callbacks (le jeu le
+            // fait sans doute déjà — garde anti-réentrance au cas où).
+            if (!_pumping)
+            {
+                _pumping = true;
+                try { SteamClient.RunCallbacks(); }
+                finally { _pumping = false; }
+            }
+
             _hostSocket?.Receive();
             _clientConnection?.Receive();
         }
@@ -198,21 +214,32 @@ namespace CoopAmbitions.Net
 
             public override void OnConnected(Connection connection, ConnectionInfo info)
             {
+                // base : ajoute la connexion au poll group — sans ça, Receive() ne lit rien.
+                base.OnConnected(connection, info);
+
+                // info.Identity.SteamId est buggé (retourne 0) sur les vieilles versions de
+                // Facepunch (< 2.4.0) : le mapping fiable se fait dans OnMessage.
                 var steamId = info.Identity.SteamId.Value;
-                Transport?.MapConnection(connection.Id, steamId);
+                if (steamId != 0)
+                    Transport?.MapConnection(connection.Id, steamId);
                 Transport?.RaisePeerConnected(steamId);
             }
 
             public override void OnDisconnected(Connection connection, ConnectionInfo info)
             {
-                Transport?.RaisePeerDisconnected(Transport.SteamIdFor(connection.Id));
+                var steamId = Transport?.SteamIdFor(connection.Id) ?? 0;
+                // base : libère le handle natif et retire la connexion de Connected.
+                base.OnDisconnected(connection, info);
+                Transport?.RaisePeerDisconnected(steamId);
             }
 
             public override void OnMessage(Connection connection, NetIdentity identity, IntPtr data,
                 int size, long messageNum, long recvTime, int channel)
             {
                 if (Transport == null) return;
-                Transport.RaiseMessage(identity.SteamId.Value, CopyPayload(data, size));
+                var steamId = identity.SteamId.Value; // fiable sur toutes les versions
+                Transport.MapConnection(connection.Id, steamId);
+                Transport.RaiseMessage(steamId, CopyPayload(data, size));
             }
         }
 
