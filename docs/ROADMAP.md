@@ -1,16 +1,22 @@
 # Roadmap
 
+> Voir [research/SYNTHESE.md](research/SYNTHESE.md) pour les décisions d'architecture
+> issues de la recherche (art antérieur, API du jeu confirmée, contraintes réseau).
+
 ## Phase 0 — Fondations ✅ (ce dépôt)
 - [x] Structure de mod conforme au SDK officiel (asmdef, locales, point d'entrée `IModBigAmbitions`)
-- [x] Transport Steam : lobby + sockets relay (Facepunch.Steamworks)
+- [x] Transport Steam : lobby + sockets relay (Facepunch.Steamworks) — vérifié contre le source Facepunch
 - [x] Protocole binaire versionné (Hello/Welcome/PlayerState/PlayerLeft)
 - [x] Avatar distant avec interpolation
-- [ ] Compiler dans Unity avec les DLL du jeu, corriger les points `// A AJUSTER`
+- [x] `LocalPlayerLocator` branché sur `GameManager.Instance.playerController` (accès attesté)
+- [x] Dossier de recherche complet (`docs/research/`)
+- [ ] Compiler dans Unity avec les DLL du jeu
 - [ ] Créer le `ModManifest.asset` dans l'éditeur Unity
+- [ ] Démarrer le réseau sur `GlobalEvents.RegisterOnGameLoadedCallback` plutôt qu'à l'init
 
 ## Phase 1 — MVP « se voir » 
-- [ ] Brancher `LocalPlayerLocator` sur le vrai service joueur du jeu
 - [ ] Tester à deux (F9 héberger → invitation Steam → connexion)
+- [ ] Session dnSpy guidée (liste ordonnée dans research/internals-du-jeu.md §finale)
 - [ ] Remplacer la capsule par un vrai modèle de personnage (asset bundle ou clone du prefab joueur)
 - [ ] Synchroniser l'animation de base (idle/marche/course) et l'état « en véhicule »
 - [ ] UI minimale : état de connexion, liste des joueurs (ModOptions ou petit overlay)

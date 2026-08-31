@@ -39,6 +39,8 @@ CoopAmbitions/                 ← le mod (à placer dans Assets/Mods/ du SDK)
 docs/
   ARCHITECTURE.md              ← conception détaillée du coop
   ROADMAP.md                   ← plan de développement par phases
+  research/                    ← dossier de recherche complet (5 rapports + synthèse)
+    SYNTHESE.md                ← ⭐ commencer ici : tout croisé et tranché
 ```
 
 ## Mise en place (développement)
