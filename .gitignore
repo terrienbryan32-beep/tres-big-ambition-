@@ -1,0 +1,11 @@
+# Fichiers générés par Unity quand le mod est copié dans le projet SDK
+*.meta
+Library/
+Temp/
+Logs/
+obj/
+bin/
+*.csproj
+*.sln
+.vs/
+.idea/

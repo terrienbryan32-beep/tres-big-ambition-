@@ -1,0 +1,9 @@
+{
+  "coopambitions:mod_name": "Coop Ambitions",
+  "coopambitions:description": "Multijoueur coopératif pour Big Ambitions. Hébergez avec F9, vos amis rejoignent via une invitation Steam.",
+  "coopambitions:status_hosting": "Hébergement — invitez vos amis via l'overlay Steam",
+  "coopambitions:status_connected": "Connecté à l'hôte",
+  "coopambitions:status_stopped": "Session coop arrêtée",
+  "coopambitions:player_joined": "{0} a rejoint la partie",
+  "coopambitions:player_left": "{0} a quitté la partie"
+}

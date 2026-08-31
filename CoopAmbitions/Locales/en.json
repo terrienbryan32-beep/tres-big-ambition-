@@ -1,0 +1,9 @@
+{
+  "coopambitions:mod_name": "Coop Ambitions",
+  "coopambitions:description": "Cooperative multiplayer for Big Ambitions. Host with F9, friends join through a Steam invite.",
+  "coopambitions:status_hosting": "Hosting — invite friends via the Steam overlay",
+  "coopambitions:status_connected": "Connected to host",
+  "coopambitions:status_stopped": "Coop session stopped",
+  "coopambitions:player_joined": "{0} joined the game",
+  "coopambitions:player_left": "{0} left the game"
+}
